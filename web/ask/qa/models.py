@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.urls import reverse
 
 
 class QuestionManager(models.Manager):
@@ -19,9 +20,15 @@ class Question(models.Model):
     author = models.ForeignKey(User, on_delete=models.CASCADE)
     likes = models.ManyToManyField(User, related_name='question_like_user')
 
+    def get_url(self):
+        return reverse('qa:question', args=(self.pk, ))
+
 
 class Answer(models.Model):
     text = models.TextField()
     added_at = models.DateTimeField(blank=True, auto_now_add=True)
     question = models.ForeignKey(Question, on_delete=models.CASCADE)
     author = models.ForeignKey(User, on_delete=models.CASCADE)
+
+    def get_url(self):
+        return reverse('qa:question', args=(self.question_id, ))

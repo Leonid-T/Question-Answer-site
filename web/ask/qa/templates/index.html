@@ -5,6 +5,9 @@
     <title>Questions</title>
 </head>
 <body>
+<p><a href="{% url 'qa:popular' %}">Popular questions</a></p>
+<p><a href="{% url 'qa:new' %}">New questions</a></p>
+<p><a href="{% url 'qa:ask' %}">Add a new question</a></p>
 <ul>
 {% for question in page_obj %}
     <li><a href="{% url 'qa:question' question.id %}">{{ question.title }}</a></li>

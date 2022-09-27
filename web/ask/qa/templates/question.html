@@ -8,15 +8,30 @@
     <h1>{{ question.title }}</h1>
     <p>{{ question.author }}</p>
     <p>{{ question.text }}</p>
-    <p>{{ question.added_ad }}</p>
+    <p><time>{{ question.added_ad }}</time></p>
     <ul>
     {% for answer in question.answer_set.all %}
         <li>
             <p>{{ answer.author }}</p>
             <p>{{ answer.text }}</p>
-            <p>{{ answer.added_at }}</p>
+            <p><time>{{ answer.added_at }}</time></p>
         </li>
     {% endfor %}
     </ul>
+    {% for e in form.non_field_errors %}
+    <p>{{ e }}</p>
+    {% endfor %}
+    <form method="post" action="{% url 'qa:question' question.id %}">
+        {% csrf_token %}
+        {% for field in form %}
+    <div class="control-group{% if form.text.errors %}has-error{% endif %}">
+        <label class="control-label">{{ field.label }}</label>
+        <div class="controls">{{ field }}</div>
+    </div>
+        {% endfor %}
+    <div class="form-actions">
+        <button type="submit" class="btn btn-primary">Send</button>
+    </div>
+    </form>
 </body>
 </html>

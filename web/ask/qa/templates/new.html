@@ -2,10 +2,10 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Popular questions</title>
+    <title>New questions</title>
 </head>
 <body>
-<h1>Popular questions</h1>
+<h1>New questions</h1>
 <a href="{% url 'qa:ask' %}">Add a new question</a>
 <ul>
 {% for question in page_obj %}
