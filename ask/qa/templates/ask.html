@@ -1,10 +1,7 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Ask for your question</title>
-</head>
-<body>
+{% extends 'block/base.html' %}
+{% block title %}Создание нового вопроса{% endblock %}
+{% block content %}
+<div class="container">
 <h1>Ask for your question</h1>
 {% for e in form.non_field_errors %}
     <p>{{ e }}</p>
@@ -21,5 +18,5 @@
         <button type="submit" class="btn btn-primary">Save</button>
     </div>
 </form>
-</body>
-</html>
+</div>
+{% endblock %}

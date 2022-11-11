@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'vendor/css/bootstrap.min.css' %}">
+</head>
+<body class="d-flex flex-column min-vh-100">
+    {% include 'block/header.html' %}
+    {% block content %}
+    {% endblock %}
+    {% include 'block/footer.html' %}
+    <script src="{% static 'vendor/js/jquery-3.3.1.slim.min.js' %}" defer></script>
+    <script src="{% static 'vendor/js/popper.min.js' %}" async></script>
+    <script src="{% static 'vendor/js/bootstrap.min.js' %}" defer></script>
+</body>
+</html>

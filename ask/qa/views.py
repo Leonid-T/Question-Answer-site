@@ -14,6 +14,9 @@ class IndexView(generic.ListView):
     paginate_by = 10
     model = Question
 
+    def get_queryset(self):
+        return Question.objects.order_by('id')
+
 
 class PopularView(generic.ListView):
     template_name = 'popular.html'
@@ -21,7 +24,7 @@ class PopularView(generic.ListView):
     model = Question
 
     def get_queryset(self):
-        return Question.objects.popular()[:]
+        return Question.objects.popular()
 
 
 class NewView(generic.ListView):
@@ -30,7 +33,7 @@ class NewView(generic.ListView):
     model = Question
 
     def get_queryset(self):
-        return Question.objects.new()[:]
+        return Question.objects.new()
 
 
 class QuestionView(generic.DetailView):

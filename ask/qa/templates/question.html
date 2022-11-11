@@ -1,14 +1,12 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>{{ question.title }}</title>
-</head>
+{% extends 'block/base.html' %}
+{% block title %}{{ question.title }}{% endblock %}
+{% block content %}
 <body>
+    <div class="container">
     <h1>{{ question.title }}</h1>
     <p>{{ question.author }}</p>
     <p>{{ question.text }}</p>
-    <p><time>{{ question.added_ad }}</time></p>
+    <p><time>{{ question.added_at }}</time></p>
     <ul>
     {% for answer in question.answer_set.all %}
         <li>
@@ -33,5 +31,6 @@
         <button type="submit" class="btn btn-primary">Send</button>
     </div>
     </form>
+    </div>
 </body>
-</html>
+{% endblock %}
