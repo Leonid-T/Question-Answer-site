@@ -19,6 +19,9 @@ class Question(models.Model):
     author = models.ForeignKey(User, on_delete=models.CASCADE)
     likes = models.ManyToManyField(User, related_name='question_like_user')
 
+    def answers(self):
+        return self.answer_set.order_by('-added_at')
+
 
 class Answer(models.Model):
     text = models.TextField()

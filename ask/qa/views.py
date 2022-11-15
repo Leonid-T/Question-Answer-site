@@ -6,7 +6,7 @@ from django.contrib.auth import authenticate, login
 from django.core.paginator import Paginator
 from django.db.models import Q
 
-from .models import Question
+from .models import Question, Answer
 from .forms import AskForm, AnswerForm, SignupForm, AuthForm
 
 
@@ -48,15 +48,18 @@ class QuestionView(View):
 
     def post(self, request, pk):
         question = get_object_or_404(Question, pk=pk)
-        if request.user.is_authenticated:
-            form = AnswerForm(request.POST)
-            form.question = question
-            form.author = request.user
-            if form.is_valid():
-                post = form.save()
-                return HttpResponseRedirect(reverse('qa:question', args=(post.question_id, )))
+        form = AnswerForm(request.POST)
+        if form.is_valid():
+            if request.user.is_authenticated:
+                text = form.cleaned_data.get('text')
+                Answer.objects.create(text=text, question=question, author=request.user)
+                return HttpResponseRedirect(reverse('qa:question', args=(question.pk,)))
             else:
-                return HttpResponseRedirect(reverse('qa:login'))
+                form.add_error('text', 'Отвечать на вопросы могут только авторизованные пользователи')
+                return render(request, 'question.html', {
+                    'question': question,
+                    'form': form,
+                })
 
 
 def question_add(request):
@@ -97,15 +100,12 @@ class LoginView(View):
     def post(self, request):
         form = AuthForm(request.POST)
         if form.is_valid():
-            username = request.POST.get('username')
-            password = request.POST.get('password')
-            user = authenticate(username=username, password=password)
+            user = authenticate(**form.cleaned_data)
             if user is not None:
                 login(request, user)
-                url = reverse('qa:index')
-            else:
-                url = reverse('qa:signup')
-            return HttpResponseRedirect(url)
+                return HttpResponseRedirect(reverse('qa:index'))
+        form.add_error('password', 'Неправильное имя пользователя или пароль')
+        return render(request, 'login.html', {'form': form})
 
 
 class SearchView(View):

@@ -19,7 +19,29 @@
                     </div>
                 </div>
                 <h4 class="my-3">Ответы</h4>
-                {% for answer in question.answer_set.all %}
+                <div class="card">
+                    <h5 class="card-header">Оставьте свой ответ</h5>
+                    <div class="card-body">
+                        {% if user.is_authenticated %}
+                        <form method="post">
+                            {% csrf_token %}
+                            {{ form.text }}
+                            {% for error in form.text.errors %}
+                            <div class="alert alert-danger py-1 px-2 my-2">
+                                <strong>{{ error|escape }}</strong>
+                            </div>
+                            {% endfor %}
+                            <button type="submit" class="btn btn-primary mt-3">Отправить</button>
+                        </form>
+                        {% else %}
+                        <p class="card-text">Для ответа на вопрос необходимо
+                            <a href="{% url 'qa:login' %}">авторизоваться</a> или
+                            <a href="{% url 'qa:signup' %}">зарегистрироваться</a>
+                        </p>
+                        {% endif %}
+                    </div>
+                </div>
+                {% for answer in question.answers %}
                 <div class="card my-3">
                     <div class="card-body">
                         <h5 class="card-title">{{ answer.author }}</h5>
@@ -28,21 +50,6 @@
                     </div>
                 </div>
                 {% endfor %}
-    {% for e in form.non_field_errors %}
-    <p>{{ e }}</p>
-    {% endfor %}
-    <form method="post" action="{% url 'qa:question' question.id %}">
-        {% csrf_token %}
-        {% for field in form %}
-    <div class="control-group{% if form.text.errors %}has-error{% endif %}">
-        <label class="control-label">{{ field.label }}</label>
-        <div class="controls">{{ field }}</div>
-    </div>
-        {% endfor %}
-    <div class="form-actions">
-        <button type="submit" class="btn btn-primary">Send</button>
-    </div>
-    </form>
             </div>
         </div>
     </div>

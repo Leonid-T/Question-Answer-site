@@ -18,16 +18,10 @@ class AskForm(forms.Form):
 
 
 class AnswerForm(forms.Form):
-    text = forms.CharField(widget=forms.Textarea, required=True)
-    question = None
-    author = None
-
-    def save(self):
-        answer = Answer(**self.cleaned_data)
-        answer.question = self.question
-        answer.author = self.author
-        answer.save()
-        return answer
+    text = forms.CharField(required=True, widget=forms.Textarea(attrs={
+        'class': 'form-control',
+        'rows': 3,
+    }))
 
 
 class SignupForm(forms.Form):
@@ -62,8 +56,8 @@ class SignupForm(forms.Form):
             password=self.cleaned_data['password']
         )
         user.save()
-        auth = authenticate(**self.cleaned_data)
-        return auth
+        user = authenticate(**self.cleaned_data)
+        return user
 
 
 class AuthForm(forms.Form):
@@ -75,3 +69,9 @@ class AuthForm(forms.Form):
         'class': 'form-control',
         'id': 'InputPassword'
     }))
+
+    def clean(self):
+        super().clean()
+        username = self.cleaned_data.get('username')
+        if not User.objects.filter(username=username).exists():
+            self.add_error('username', 'Пользователя с данным именем не существует')
