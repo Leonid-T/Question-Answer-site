@@ -1,18 +1,36 @@
 {% extends 'block/base.html' %}
-{% block title %}Authorization{% endblock %}
+{% block title %}Авторизация{% endblock %}
 {% block content %}
-<div class="container">
-    <form method="post">
-        {% csrf_token %}
-        {% for field in form %}
-        <div class="control-group{% if field.errors %}has-error{% endif %}">
-            <label class="control-label">{{ field.label }}</label>
-            <div class="controls">{{ field }}</div>
+<div class="container my-auto">
+    <div class="row justify-content-center">
+        <div class="col-lg-4">
+            {% if form.errors %}
+                {% for error in form.non_field_errors %}
+                <div class="alert alert-danger">
+                    <strong>{{ error|escape }}</strong>
+                </div>
+                {% endfor %}
+            {% endif %}
+            <h2 class="text-center">Авторизация</h2>
+            <form method="post" action="{% url 'qa:login' %}">
+                {% csrf_token %}
+                <label class="form-label mt-2" for="InputUsername">Имя пользователя</label>
+                {{ form.username }}
+                {% for error in form.username.errors %}
+                <div class="alert alert-danger py-1 px-2 my-2">
+                    <strong>{{ error|escape }}</strong>
+                </div>
+                {% endfor %}
+                <label class="form-label mt-2" for="InputPassword">Пароль</label>
+                {{ form.password }}
+                {% for error in form.password.errors %}
+                <div class="alert alert-danger py-1 px-2 my-2">
+                    <strong>{{ error|escape }}</strong>
+                </div>
+                {% endfor %}
+                <button type="submit" class="btn btn-primary mt-3">Войти</button>
+            </form>
         </div>
-        {% endfor %}
-    <div class="form-actions">
-        <button type="submit" class="btn btn-primary">login</button>
     </div>
-    </form>
 </div>
 {% endblock %}

@@ -14,7 +14,14 @@
                         <a class="nav-link" href="{% url 'qa:new' %}">Новые</a>
                     </li>
                 </ul>
-                <a class="btn btn-outline-success" href="{% url 'qa:ask' %}">Задать вопрос</a>
+                <a class="btn btn-outline-success mx-3" href="{% url 'qa:ask' %}">Задать вопрос</a>
+                {% if user.is_authenticated %}
+                <span class="navbar-text mx-3">{{ user }}</span>
+                <a class="btn btn-link" href="{% url 'qa:logout' %}">Выход</a>
+                {% else %}
+                <a class="btn btn-link" href="{% url 'qa:login' %}">Вход</a>
+                <a class="btn btn-link" href="{% url 'qa:signup' %}">Регистрация</a>
+                {% endif %}
             </div>
         </div>
     </nav>

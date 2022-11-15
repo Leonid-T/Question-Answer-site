@@ -3,19 +3,32 @@
 {% block content %}
 <body>
     <div class="container">
-    <h1>{{ question.title }}</h1>
-    <p>{{ question.author }}</p>
-    <p>{{ question.text }}</p>
-    <p><time>{{ question.added_at }}</time></p>
-    <ul>
-    {% for answer in question.answer_set.all %}
-        <li>
-            <p>{{ answer.author }}</p>
-            <p>{{ answer.text }}</p>
-            <p><time>{{ answer.added_at }}</time></p>
-        </li>
-    {% endfor %}
-    </ul>
+        <div class="row justify-content-center">
+            <div class="col-lg-9">
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="{% url 'qa:index' %}">Список вопросов</a></li>
+                        <li class="breadcrumb-item active">{{ question.title }}</li>
+                    </ol>
+                </nav>
+                <div class="card">
+                    <div class="card-body">
+                        <h3 class="card-title">{{ question.title }}</h3>
+                        <h6 class="card-subtitle mb-2 text-muted">{{ question.author }}</h6>
+                        <p class="card-text my-3">{{ question.text }}</p>
+                        <time class="text-muted"><small>{{ question.added_at }}</small></time>
+                    </div>
+                </div>
+                <h4 class="my-3">Ответы</h4>
+                {% for answer in question.answer_set.all %}
+                <div class="card my-3">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ answer.author }}</h5>
+                        <p class="card-text">{{ answer.text }}</p>
+                        <time class="text-muted"><small>{{ answer.added_at }}</small></time>
+                    </div>
+                </div>
+                {% endfor %}
     {% for e in form.non_field_errors %}
     <p>{{ e }}</p>
     {% endfor %}
@@ -31,6 +44,8 @@
         <button type="submit" class="btn btn-primary">Send</button>
     </div>
     </form>
+            </div>
+        </div>
     </div>
 </body>
 {% endblock %}

@@ -1,12 +1,11 @@
 from django.http import HttpResponse, HttpResponseRedirect
-from django.views import generic
+from django.views import generic, View
 from django.shortcuts import render, get_object_or_404
 from django.urls import reverse
-from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
 from django.contrib.auth import authenticate, login
 
 from .models import Question
-from .forms import AskForm, AnswerForm, create_user
+from .forms import AskForm, AnswerForm, SignupForm, AuthForm
 
 
 class IndexView(generic.ListView):
@@ -15,7 +14,7 @@ class IndexView(generic.ListView):
     model = Question
 
     def get_queryset(self):
-        return Question.objects.order_by('id')
+        return Question.objects.all()
 
 
 class PopularView(generic.ListView):
@@ -36,14 +35,17 @@ class NewView(generic.ListView):
         return Question.objects.new()
 
 
-class QuestionView(generic.DetailView):
-    model = Question
-    template_name = 'question.html'
+class QuestionView(View):
+    def get(self, request, pk):
+        question = get_object_or_404(Question, pk=pk)
+        form = AnswerForm()
+        return render(request, 'question.html', {
+            'question': question,
+            'form': form,
+        })
 
-
-def question_view(request, pk):
-    question = get_object_or_404(Question, pk=pk)
-    if request.method == 'POST':
+    def post(self, request, pk):
+        question = get_object_or_404(Question, pk=pk)
         if request.user.is_authenticated:
             form = AnswerForm(request.POST)
             form.question = question
@@ -51,14 +53,8 @@ def question_view(request, pk):
             if form.is_valid():
                 post = form.save()
                 return HttpResponseRedirect(reverse('qa:question', args=(post.question_id, )))
-        else:
-            return HttpResponseRedirect(reverse('qa:login'))
-    else:
-        form = AnswerForm()
-    return render(request, 'question.html', {
-        'question': question,
-        'form': form,
-    })
+            else:
+                return HttpResponseRedirect(reverse('qa:login'))
 
 
 def question_add(request):
@@ -76,29 +72,35 @@ def question_add(request):
         return HttpResponseRedirect(reverse('qa:login'))
 
 
-def signup_view(request):
-    if request.method == 'POST':
-        form = UserCreationForm(request.POST)
+class SignupView(View):
+    def get(self, request):
+        form = SignupForm()
+        return render(request, 'signup.html', {'form': form})
+
+    def post(self, request):
+        form = SignupForm(request.POST)
         if form.is_valid():
-            user = create_user(form)
-            login(request, user)
-            return HttpResponseRedirect(reverse('qa:index'))
-    else:
-        form = UserCreationForm()
-    return render(request, 'signup.html', {'form': form})
+            user = form.save()
+            if user is not None:
+                login(request, user)
+                return HttpResponseRedirect(reverse('qa:index'))
+        return render(request, 'signup.html', {'form': form})
 
 
-def login_view(request):
-    if request.method == 'POST':
-        username = request.POST.get('username')
-        password = request.POST.get('password')
-        user = authenticate(username=username, password=password)
-        if user is not None:
-            login(request, user)
-            url = reverse('qa:index')
-        else:
-            url = reverse('qa:signup')
-        return HttpResponseRedirect(url)
-    else:
-        form = AuthenticationForm(request.POST)
-    return render(request, 'login.html', {'form': form})
+class LoginView(View):
+    def get(self, request):
+        form = AuthForm()
+        return render(request, 'login.html', {'form': form})
+
+    def post(self, request):
+        form = AuthForm(request.POST)
+        if form.is_valid():
+            username = request.POST.get('username')
+            password = request.POST.get('password')
+            user = authenticate(username=username, password=password)
+            if user is not None:
+                login(request, user)
+                url = reverse('qa:index')
+            else:
+                url = reverse('qa:signup')
+            return HttpResponseRedirect(url)

@@ -3,15 +3,17 @@
 {% block content %}
 <div class="container">
     <div class="row justify-content-center">
-    {% for question in page_obj %}
-        <a class="card w-75 text-decoration-none text-reset my-2" href="{% url 'qa:question' question.id %}">
-            <div class="card-body">
-                <h5 class="card-title">{{ question.title }}</h5>
-                <p class="card-text">{{ question.text }}</p>
-            </div>
-        </a>
-    {% endfor %}
+        <div class="col-lg-9">
+            {% for question in page_obj %}
+            <a class="card text-decoration-none text-reset my-3" href="{% url 'qa:question' question.id %}">
+                <div class="card-body">
+                    <h5 class="card-title">{{ question.title }}</h5>
+                    <p class="card-text">{{ question.text }}</p>
+                </div>
+            </a>
+        {% endfor %}
+        {% include 'block/pagination.html' %}
+        </div>
     </div>
-    {% include 'block/pagination.html' %}
 </div>
 {% endblock %}
