@@ -12,5 +12,6 @@ urlpatterns = [
     path('ask/', views.question_add, name='ask'),
     path('popular/', views.PopularView.as_view(), name='popular'),
     path('new/', views.NewView.as_view(), name='new'),
-    path('logout', LogoutView.as_view(), name='logout')
+    path('logout', LogoutView.as_view(), name='logout'),
+    path('search', views.SearchView.as_view(), name='search'),
 ]

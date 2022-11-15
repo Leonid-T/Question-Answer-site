@@ -6,14 +6,9 @@
         <div class="col-lg-9">
             <h2 class="text-center my-3">Новые вопросы</h2>
             {% for question in page_obj %}
-            <a class="card text-decoration-none text-reset my-3" href="{% url 'qa:question' question.id %}">
-                <div class="card-body">
-                    <h5 class="card-title">{{ question.title }}</h5>
-                    <p class="card-text">{{ question.text }}</p>
-                </div>
-            </a>
-        {% endfor %}
-        {% include 'block/pagination.html' %}
+            {% include 'block/question_obj.html' %}
+            {% endfor %}
+            {% include 'block/pagination.html' %}
         </div>
     </div>
 </div>

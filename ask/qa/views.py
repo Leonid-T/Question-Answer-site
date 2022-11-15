@@ -3,6 +3,8 @@ from django.views import generic, View
 from django.shortcuts import render, get_object_or_404
 from django.urls import reverse
 from django.contrib.auth import authenticate, login
+from django.core.paginator import Paginator
+from django.db.models import Q
 
 from .models import Question
 from .forms import AskForm, AnswerForm, SignupForm, AuthForm
@@ -104,3 +106,19 @@ class LoginView(View):
             else:
                 url = reverse('qa:signup')
             return HttpResponseRedirect(url)
+
+
+class SearchView(View):
+    def get(self, request):
+        results = ''
+        query_search = request.GET.get('search')
+        if query_search:
+            results = Question.objects.filter(Q(title__icontains=query_search) | Q(text__icontains=query_search))
+        paginate_by = 10
+        paginator = Paginator(results, paginate_by)
+        page_number = request.GET.get('page')
+        page_obj = paginator.get_page(page_number)
+        return render(request, 'search.html', {
+            'count': paginator.count,
+            'page_obj': page_obj,
+        })

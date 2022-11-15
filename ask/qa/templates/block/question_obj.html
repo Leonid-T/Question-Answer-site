@@ -1,0 +1,6 @@
+<a class="card text-decoration-none text-reset my-3" href="{% url 'qa:question' question.id %}">
+    <div class="card-body">
+        <h5 class="card-title">{{ question.title }}</h5>
+        <p class="card-text">{{ question.text }}</p>
+    </div>
+</a>
