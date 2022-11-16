@@ -62,19 +62,20 @@ class QuestionView(View):
                 })
 
 
-def question_add(request):
-    if request.user.is_authenticated:
-        if request.method == 'POST':
-            form = AskForm(request.POST)
-            form.author = request.user
-            if form.is_valid():
-                post = form.save()
-                return HttpResponseRedirect(reverse('qa:question', args=(post.pk, )))
-        else:
-            form = AskForm()
+class QuestionAdd(View):
+    def get(self, request):
+        form = AskForm()
         return render(request, 'ask.html', {'form': form})
-    else:
-        return HttpResponseRedirect(reverse('qa:login'))
+
+    def post(self, request):
+        form = AskForm(request.POST)
+        if form.is_valid():
+            if request.user.is_authenticated:
+                question = Question.objects.create(**form.cleaned_data, author=request.user)
+                return HttpResponseRedirect(reverse('qa:question', args=(question.pk, )))
+            else:
+                form.add_error('text', 'Оставлять вопросы могут только авторизованные пользователи')
+        return render(request, 'ask.html', {'form': form})
 
 
 class SignupView(View):

@@ -6,16 +6,14 @@ from .models import Question, Answer
 
 
 class AskForm(forms.Form):
-    title = forms.CharField(max_length=225, required=True)
-    text = forms.CharField(widget=forms.Textarea, required=True)
-    author = None
-
-    def save(self):
-        question = Question(**self.cleaned_data)
-        question.author = self.author
-        question.save()
-        return question
-
+    title = forms.CharField(max_length=225, required=True, widget=forms.TextInput(attrs={
+        'class': 'form-control',
+        'id': 'title',
+    }))
+    text = forms.CharField(required=True, widget=forms.Textarea(attrs={
+        'class': 'form-control',
+        'id': 'text',
+    }))
 
 class AnswerForm(forms.Form):
     text = forms.CharField(required=True, widget=forms.Textarea(attrs={

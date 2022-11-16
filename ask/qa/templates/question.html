@@ -23,6 +23,13 @@
                     <h5 class="card-header">Оставьте свой ответ</h5>
                     <div class="card-body">
                         {% if user.is_authenticated %}
+                        {% if form.errors %}
+                        {% for error in form.non_field_errors %}
+                        <div class="alert alert-danger">
+                            <strong>{{ error|escape }}</strong>
+                        </div>
+                        {% endfor %}
+                        {% endif %}
                         <form method="post">
                             {% csrf_token %}
                             {{ form.text }}

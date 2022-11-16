@@ -1,22 +1,49 @@
 {% extends 'block/base.html' %}
-{% block title %}Создание нового вопроса{% endblock %}
+{% block title %}Новый вопрос{% endblock %}
 {% block content %}
 <div class="container">
-<h1>Ask for your question</h1>
-{% for e in form.non_field_errors %}
-    <p>{{ e }}</p>
-{% endfor %}
-<form method="post" action="{% url 'qa:ask' %}">
-    {% csrf_token %}
-    {% for field in form %}
-    <div class="control-group{% if field.errors %}has-error{% endif %}">
-        <label class="control-label">{{ field.label }}</label>
-        <div class="controls">{{ field }}</div>
+    <div class="row justify-content-center">
+        <div class="col-lg-9">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{% url 'qa:index' %}">Список вопросов</a></li>
+                    <li class="breadcrumb-item active">Новый вопрос</li>
+                </ol>
+            </nav>
+            <h2 class="text-center">Новый вопрос</h2>
+            {% if user.is_authenticated %}
+            {% if form.errors %}
+            {% for error in form.non_field_errors %}
+            <div class="alert alert-danger">
+                <strong>{{ error|escape }}</strong>
+            </div>
+            {% endfor %}
+            {% endif %}
+            <form method="post">
+                {% csrf_token %}
+                <label class="form-label mt-2" for="title">Краткое описание вопроса</label>
+                {{ form.title }}
+                {% for error in form.title.errors %}
+                <div class="alert alert-danger py-1 px-2 my-2">
+                    <strong>{{ error|escape }}</strong>
+                </div>
+                {% endfor %}
+                <label class="form-label mt-2" for="text">Ваш вопрос</label>
+                {{ form.text }}
+                {% for error in form.text.errors %}
+                <div class="alert alert-danger py-1 px-2 my-2">
+                    <strong>{{ error|escape }}</strong>
+                </div>
+                {% endfor %}
+                <button type="submit" class="btn btn-primary mt-3">Отправить</button>
+            </form>
+            {% else %}
+            <p>Чтобы оставить новый вопрос, необходимо
+                <a href="{% url 'qa:login' %}">авторизоваться</a> или
+                <a href="{% url 'qa:signup' %}">зарегистрироваться</a>
+            </p>
+            {% endif %}
+        </div>
     </div>
-    {% endfor %}
-    <div class="form-actions">
-        <button type="submit" class="btn btn-primary">Save</button>
-    </div>
-</form>
 </div>
 {% endblock %}
