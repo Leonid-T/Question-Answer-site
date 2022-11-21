@@ -1,6 +1,12 @@
-<a class="card text-decoration-none text-reset my-3" href="{% url 'qa:question' question.id %}">
+<div class="card my-3" id="{{ question.id }}">
     <div class="card-body">
-        <h5 class="card-title">{{ question.title }}</h5>
+        <div class="d-flex justify-content-between">
+            <a class="text-decoration-none" href="{% url 'qa:question' question.id %}" ><h5 class="card-title d-flex">{{ question.title }}</h5></a>
+            {% if user == question.author %}
+            <button type="button" class="btn-close d-flex w-1" onclick="" aria-label="Close"></button>
+            {% endif %}
+        </div>
         <p class="card-text">{{ question.text }}</p>
+        <p class="card-text">Ответов: {{ question.answers.count }}</p>
     </div>
-</a>
+</div>

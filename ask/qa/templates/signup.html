@@ -1,6 +1,7 @@
 {% extends 'block/base.html' %}
 {% block title %}Регистрация{% endblock %}
 {% block content %}
+{% load crispy_forms_tags %}
 <div class="container my-auto">
     <div class="row justify-content-center">
         <div class="col-lg-4">
@@ -15,26 +16,11 @@
             <form method="post" action="{% url 'qa:signup' %}">
                 {% csrf_token %}
                 <label class="form-label mt-2" for="InputUsername">Имя пользователя</label>
-                {{ form.username }}
-                {% for error in form.username.errors %}
-                <div class="alert alert-danger py-1 px-2 my-2">
-                    <strong>{{ error|escape }}</strong>
-                </div>
-                {% endfor %}
+                {{ form.username|as_crispy_field }}
                 <label class="form-label mt-2" for="InputPassword">Пароль</label>
-                {{ form.password }}
-                {% for error in form.password.errors %}
-                <div class="alert alert-danger py-1 px-2 my-2">
-                    <strong>{{ error|escape }}</strong>
-                </div>
-                {% endfor %}
+                {{ form.password|as_crispy_field }}
                 <label class="form-label mt-2" for="ReInputPassword">Повторите пароль</label>
-                {{ form.repeat_password }}
-                {% for error in form.repeat_password.errors %}
-                <div class="alert alert-danger py-1 px-2 my-2">
-                    <strong>{{ error|escape }}</strong>
-                </div>
-                {% endfor %}
+                {{ form.repeat_password|as_crispy_field }}
                 <button type="submit" class="btn btn-primary mt-3">Регистрация</button>
             </form>
         </div>

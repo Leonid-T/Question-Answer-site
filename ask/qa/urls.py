@@ -14,4 +14,6 @@ urlpatterns = [
     path('new/', views.NewView.as_view(), name='new'),
     path('logout', LogoutView.as_view(), name='logout'),
     path('search', views.SearchView.as_view(), name='search'),
+    path('delete_answer', views.AnswerDelete.as_view(), name='delete_answer'),
+    path('delete_question', views.QuestionDelete.as_view(), name='delete_question'),
 ]

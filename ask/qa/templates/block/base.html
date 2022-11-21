@@ -4,14 +4,18 @@
 <head>
     <meta charset="UTF-8">
     <title>{% block title %}{% endblock %}</title>
-    <link rel="stylesheet" href="{% static 'vendor/css/bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'vendor/bootstrap-5.2.2/css/bootstrap.min.css' %}">
 </head>
 <body class="d-flex flex-column min-vh-100">
     {% include 'block/header.html' %}
     {% block content %}
     {% endblock %}
     {% include 'block/footer.html' %}
-    <script src="{% static 'vendor/js/bootstrap.bundle.min.js' %}" async></script>
-    <script src="{% static 'vendor/js/bootstrap.min.js' %}" defer></script>
+    {% block script %}
+    {% endblock %}
+    <script src="{% static 'vendor/bootstrap-5.2.2/js/bootstrap.bundle.min.js' %}" async></script>
+    <script src="{% static 'vendor/bootstrap-5.2.2/js/bootstrap.min.js' %}" defer></script>
+    <script src="{% static 'vendor/jquery-3.6.1.js' %}" defer></script>
+    <script src="{% static 'script.js' %}" defer></script>
 </body>
 </html>

@@ -1,4 +1,4 @@
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.views import generic, View
 from django.shortcuts import render, get_object_or_404
 from django.urls import reverse
@@ -50,16 +50,11 @@ class QuestionView(View):
         question = get_object_or_404(Question, pk=pk)
         form = AnswerForm(request.POST)
         if form.is_valid():
-            if request.user.is_authenticated:
-                text = form.cleaned_data.get('text')
-                Answer.objects.create(text=text, question=question, author=request.user)
-                return HttpResponseRedirect(reverse('qa:question', args=(question.pk,)))
-            else:
-                form.add_error('text', 'Отвечать на вопросы могут только авторизованные пользователи')
-                return render(request, 'question.html', {
-                    'question': question,
-                    'form': form,
-                })
+            user = request.user
+            if user.is_authenticated:
+                content = form.save(question, user)
+                return JsonResponse(content, status=200)
+        return JsonResponse({'error': 'Validation error'}, status=400)
 
 
 class QuestionAdd(View):
@@ -123,3 +118,31 @@ class SearchView(View):
             'count': paginator.count,
             'page_obj': page_obj,
         })
+
+
+class AnswerDelete(View):
+    def post(self, request):
+        user = request.user
+        if user.is_authenticated:
+            try:
+                Answer.objects.get(
+                    question=request.POST.get('question_id'),
+                    author=user,
+                    id=request.POST.get('answer_id')
+                ).delete()
+                return JsonResponse({}, status=200)
+            except (KeyError, Answer.DoesNotExist):
+                return JsonResponse({'error': 'DoesNotExist'}, status=400)
+        return JsonResponse({'error': 'Is not authenticated'}, status=400)
+
+
+class QuestionDelete(View):
+    def post(self, request):
+        user = request.user
+        if user.is_authenticated:
+            try:
+                Question.objects.get(author=user, id=request.POST.get('id')).delete()
+                return JsonResponse({}, status=200)
+            except (KeyError, Question.DoesNotExist):
+                return JsonResponse({'error': 'DoesNotExist'}, status=400)
+        return JsonResponse({'error': 'Is not authenticated'}, status=400)
