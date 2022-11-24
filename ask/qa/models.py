@@ -25,6 +25,13 @@ class Question(models.Model):
     def answers(self):
         return self.answer_set.order_by('-added_at')
 
+    def text_short(self):
+        size = 200
+        if len(self.text) > size:
+            return f'{self.text[:size]}...'
+        else:
+            return self.text
+
 
 class Answer(models.Model):
     text = models.TextField()

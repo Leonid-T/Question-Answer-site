@@ -1,4 +1,4 @@
-<div class="card my-3" id="{{ question.id }}">
+<div class="card my-3 flex-row" id="{{ question.id }}">
     <div class="card-body">
         <div class="d-flex justify-content-between">
             <a class="text-decoration-none" href="{% url 'qa:question' question.id %}" ><h5 class="card-title d-flex">{{ question.title }}</h5></a>
@@ -6,7 +6,7 @@
             <button type="button" class="btn-close d-flex w-1" onclick="" aria-label="Close"></button>
             {% endif %}
         </div>
-        <p class="card-text">{{ question.text }}</p>
+        <p class="card-text">{{ question.text_short }}</p>
         <p class="card-text">Ответов: {{ question.answers.count }}</p>
     </div>
 </div>

@@ -59,10 +59,7 @@ function AjaxRemoveAnswer(url, QuestionRemoveId, AnswerRemoveId) {
         type: 'post',
         url: url,
         headers: {'X-CSRFToken': csrftoken},
-        success: function (data) {
-                let elem = document.getElementById(AnswerRemoveId);
-                elem.parentNode.removeChild(elem);
-            },
+        success: function (data) { document.getElementById(AnswerRemoveId).remove(); },
         error: function() { console.log(data.responseJSON.error); },
     })
 }

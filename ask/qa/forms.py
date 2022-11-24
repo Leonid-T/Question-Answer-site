@@ -2,6 +2,9 @@ from django import forms
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate
 from django.urls import reverse
+from django.utils.formats import localize
+from django.utils.timezone import template_localtime
+from django.utils.html import escape
 
 from crispy_forms.helper import FormHelper
 
@@ -34,9 +37,9 @@ class AnswerForm(forms.Form):
         text = self.cleaned_data.get('text')
         answer = Answer.objects.create(text=text, question=question, author=user)
         content = {
-            'text': text,
-            'added_at': answer.added_at,
-            'author': user.username,
+            'text': escape(text),
+            'added_at': localize(template_localtime(answer.added_at)),
+            'author': escape(user.username),
             'answer_id': answer.id,
             'question_id': answer.question_id,
             'url_delete': reverse('qa:delete_answer'),
