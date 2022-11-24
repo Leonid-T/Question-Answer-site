@@ -7,7 +7,7 @@ from django.core.paginator import Paginator
 from django.db.models import Q
 
 from .models import Question, Answer
-from .forms import AskForm, AnswerForm, SignupForm, AuthForm
+from .forms import AskForm, AnswerForm, SignupForm, AuthForm, serialize_answers
 
 
 class IndexView(generic.ListView):
@@ -146,3 +146,14 @@ class QuestionDelete(View):
             except (KeyError, Question.DoesNotExist):
                 return JsonResponse({'error': 'DoesNotExist'}, status=400)
         return JsonResponse({'error': 'Is not authenticated'}, status=400)
+
+
+class LoadAnswers(View):
+    def get(self, request, pk):
+        paginate_by = 10
+        answers = get_object_or_404(Question, pk=pk).answers()
+        paginator = Paginator(answers, paginate_by)
+        page = request.GET.get('page')
+        page_obj = paginator.get_page(page)
+        content = serialize_answers(page_obj, request.user)
+        return JsonResponse(content, status=200)

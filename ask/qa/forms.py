@@ -28,10 +28,10 @@ class AnswerForm(forms.Form):
         'rows': 3,
     }))
 
-    def __init__(self, *args, **kwargs):
-        super(AnswerForm, self).__init__(*args, **kwargs)
-        self.helper = FormHelper()
-        self.helper.form_show_labels = False
+    # def __init__(self, *args, **kwargs):
+    #     super(AnswerForm, self).__init__(*args, **kwargs)
+    #     self.helper = FormHelper()
+    #     self.helper.form_show_labels = False
 
     def save(self, question, user):
         text = self.cleaned_data.get('text')
@@ -43,6 +43,7 @@ class AnswerForm(forms.Form):
             'answer_id': answer.id,
             'question_id': answer.question_id,
             'url_delete': reverse('qa:delete_answer'),
+            'is_user': True,
         }
         return content
 
@@ -110,3 +111,22 @@ class AuthForm(forms.Form):
         username = self.cleaned_data.get('username')
         if not User.objects.filter(username=username).exists():
             self.add_error('username', 'Пользователя с данным именем не существует')
+
+
+def serialize_answers(page_obj, user):
+    answers = {}
+    number = 0
+    for answer in page_obj:
+        is_user = user.username == answer.author.username
+        answers[number] = {
+            'text': escape(answer.text),
+            'author': escape(answer.author.username),
+            'question_id': answer.question_id,
+            'added_at': localize(template_localtime(answer.added_at)),
+            'answer_id': answer.id,
+        }
+        if is_user:
+            answers[number]['url_delete'] = reverse('qa:delete_answer')
+            answers[number]['is_user'] = is_user
+        number += 1
+    return {'has_page': page_obj.has_next(), 'answers': answers}

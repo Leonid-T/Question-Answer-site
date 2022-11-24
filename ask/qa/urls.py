@@ -16,4 +16,5 @@ urlpatterns = [
     path('search', views.SearchView.as_view(), name='search'),
     path('delete_answer', views.AnswerDelete.as_view(), name='delete_answer'),
     path('delete_question', views.QuestionDelete.as_view(), name='delete_question'),
+    path('question/<int:pk>/load_answers', views.LoadAnswers.as_view(), name='load_answers'),
 ]

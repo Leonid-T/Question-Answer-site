@@ -1,7 +1,6 @@
 {% extends 'block/base.html' %}
 {% block title %}{{ question.title }}{% endblock %}
 {% block content %}
-{% load crispy_forms_tags %}
     <div class="container">
         <div class="row justify-content-center">
             <div class="col-lg-9">
@@ -34,7 +33,7 @@
                         {% if user.is_authenticated %}
                         <form id="answer_form" method="post">
                             {% csrf_token %}
-                            {{ form.text|as_crispy_field }}
+                            {{ form.text }}
                             <button type="submit" class="btn btn-primary mt-3">Отправить</button>
                         </form>
                         {% else %}
@@ -45,26 +44,12 @@
                         {% endif %}
                     </div>
                 </div>
-                <div id="answers">
-                {% for answer in question.answers %}
-                <div class="card my-3" id="{{ answer.id }}">
-                    <div class="card-body">
-                        <div class="d-flex justify-content-between">
-                            <h5 class="card-title">{{ answer.author }}</h5>
-                            {% if user == answer.author %}
-                            <form method="post">
-                            {% csrf_token %}
-                            <button type="button" class="btn-close d-flex" onclick="AjaxRemoveAnswer('{% url 'qa:delete_answer' %}', {{ question.id }}, {{ answer.id }})" aria-label="Delete"></button>
-                            </form>
-                            {% endif %}
-                        </div>
-                        <p class="card-text">{{ answer.text }}</p>
-                        <time class="text-muted"><small>{{ answer.added_at }}</small></time>
-                    </div>
-                </div>
-                {% endfor %}
-                </div>
+                <div id="answers"></div>
             </div>
         </div>
     </div>
+{% endblock %}
+{% block script %}
+{% load static %}
+<script src="{% static 'scripts/question.js' %}" defer></script>
 {% endblock %}

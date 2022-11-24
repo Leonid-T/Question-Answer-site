@@ -41,3 +41,6 @@ class Answer(models.Model):
 
     def __str__(self):
         return self.text
+
+    def serialize(self):
+        pass
