@@ -11,12 +11,16 @@
                 </ol>
             </nav>
             <h2 class="text-center my-3">Результаты поиска</h2>
-            <p class="lead">Найдено вопросов: {{ count }}</p>
-            {% for question in page_obj %}
-            {% include 'block/question_obj.html' %}
-            {% endfor %}
-            {% include 'block/pagination.html' %}
+            <p class="lead">Найдено вопросов: <span id="searchCount"></span></p>
+            <div id="questions"></div>
+            <nav class="d-flex justify-content-center mt-3 mb-1">
+                <ul id="paginator" class="pagination"></ul>
+            </nav>
         </div>
     </div>
 </div>
+{% endblock %}
+{% block script %}
+{% load static %}
+<script src="{% static 'scripts/index.js' %}" defer></script>
 {% endblock %}

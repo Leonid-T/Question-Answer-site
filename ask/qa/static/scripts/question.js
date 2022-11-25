@@ -49,7 +49,7 @@ function AjaxRemoveAnswer(url, QuestionRemoveId, AnswerRemoveId) {
         },
         type: 'post',
         url: url,
-        headers: {'X-CSRFToken': csrftoken},
+        headers: { 'X-CSRFToken': csrftoken },
         success: function (data) { document.getElementById(AnswerRemoveId).remove(); },
         error: function() { console.log(data.responseJSON.error); },
     })
@@ -62,7 +62,7 @@ function AjaxRemoveQuestion(url, removeId, urlRedirect) {
         },
         type: 'post',
         url: url,
-        headers: {'X-CSRFToken': csrftoken},
+        headers: { 'X-CSRFToken': csrftoken },
         success: function (data) { window.location = urlRedirect; },
         error: function() { console.log(data.responseJSON.error); },
     })
@@ -108,7 +108,7 @@ function createAnswer(data) {
                               <time class="text-muted"><small>${ data.added_at }</small></time>
                           </div>
                       </div>`;
-    return answerHtml
+    return answerHtml;
 }
 
 function CreateDeleteButton(data) {

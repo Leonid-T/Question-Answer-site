@@ -22,9 +22,11 @@ class Question(models.Model):
     def __str__(self):
         return self.title
 
+    @property
     def answers(self):
         return self.answer_set.order_by('-added_at')
 
+    @property
     def text_short(self):
         size = 200
         if len(self.text) > size:

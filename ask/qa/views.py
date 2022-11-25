@@ -1,5 +1,5 @@
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
-from django.views import generic, View
+from django.views import View
 from django.shortcuts import render, get_object_or_404
 from django.urls import reverse
 from django.contrib.auth import authenticate, login
@@ -7,34 +7,27 @@ from django.core.paginator import Paginator
 from django.db.models import Q
 
 from .models import Question, Answer
-from .forms import AskForm, AnswerForm, SignupForm, AuthForm, serialize_answers
+from .forms import AskForm, AnswerForm, SignupForm, AuthForm, serialize_answers, serialize_questions
 
 
-class IndexView(generic.ListView):
-    template_name = 'index.html'
-    paginate_by = 10
-    model = Question
+class IndexView(View):
+    sort_method = {
+        'popular': Question.objects.popular,
+        'new': Question.objects.new,
+    }
 
-    def get_queryset(self):
-        return Question.objects.all()
-
-
-class PopularView(generic.ListView):
-    template_name = 'popular.html'
-    paginate_by = 10
-    model = Question
-
-    def get_queryset(self):
-        return Question.objects.popular()
-
-
-class NewView(generic.ListView):
-    template_name = 'new.html'
-    paginate_by = 10
-    model = Question
-
-    def get_queryset(self):
-        return Question.objects.new()
+    def get(self, request):
+        if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+            page = request.GET.get('page')
+            sort_option = request.GET.get('sort_option')
+            questions = self.sort_method[sort_option]()
+            paginate_by = 10
+            paginator = Paginator(questions, paginate_by)
+            page_obj = paginator.get_page(page)
+            content = serialize_questions(page_obj, request.user)
+            return JsonResponse(content, status=200)
+        else:
+            return render(request, 'index.html')
 
 
 class QuestionView(View):
@@ -106,18 +99,19 @@ class LoginView(View):
 
 class SearchView(View):
     def get(self, request):
-        results = ''
-        query_search = request.GET.get('search')
-        if query_search:
-            results = Question.objects.filter(Q(title__icontains=query_search) | Q(text__icontains=query_search))
-        paginate_by = 10
-        paginator = Paginator(results, paginate_by)
-        page_number = request.GET.get('page')
-        page_obj = paginator.get_page(page_number)
-        return render(request, 'search.html', {
-            'count': paginator.count,
-            'page_obj': page_obj,
-        })
+        if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+            results = ''
+            query_search = request.GET.get('search')
+            if query_search:
+                results = Question.objects.filter(Q(title__icontains=query_search) | Q(text__icontains=query_search))
+            paginate_by = 10
+            paginator = Paginator(results, paginate_by)
+            page_number = request.GET.get('page')
+            page_obj = paginator.get_page(page_number)
+            content = serialize_questions(page_obj, request.user)
+            return JsonResponse(content, status=200)
+        else:
+            return render(request, 'search.html')
 
 
 class AnswerDelete(View):
@@ -151,9 +145,13 @@ class QuestionDelete(View):
 class LoadAnswers(View):
     def get(self, request, pk):
         paginate_by = 10
-        answers = get_object_or_404(Question, pk=pk).answers()
+        answers = get_object_or_404(Question, pk=pk).answers
         paginator = Paginator(answers, paginate_by)
         page = request.GET.get('page')
         page_obj = paginator.get_page(page)
         content = serialize_answers(page_obj, request.user)
         return JsonResponse(content, status=200)
+
+
+class ContactsView(View):
+    pass

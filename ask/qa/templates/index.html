@@ -4,11 +4,23 @@
 <div class="container">
     <div class="row justify-content-center">
         <div class="col-lg-9">
-            {% for question in page_obj %}
-            {% include 'block/question_obj.html' %}
-            {% endfor %}
-            {% include 'block/pagination.html' %}
+            <ul id="sortOption" class="nav nav-tabs">
+                <li class="nav-item">
+                    <button id="popular" class="nav-link active" onclick="changeOption('popular')">Популярные</button>
+                </li>
+                <li class="nav-item">
+                    <button id="new" class="nav-link" onclick="changeOption('new')">Новые</button>
+                </li>
+            </ul>
+            <div id="questions"></div>
+            <nav class="d-flex justify-content-center mt-3 mb-1">
+                <ul id="paginator" class="pagination"></ul>
+            </nav>
         </div>
     </div>
 </div>
+{% endblock %}
+{% block script %}
+{% load static %}
+<script src="{% static 'scripts/index.js' %}" defer></script>
 {% endblock %}
