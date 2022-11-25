@@ -28,11 +28,6 @@ class AnswerForm(forms.Form):
         'rows': 3,
     }))
 
-    # def __init__(self, *args, **kwargs):
-    #     super(AnswerForm, self).__init__(*args, **kwargs)
-    #     self.helper = FormHelper()
-    #     self.helper.form_show_labels = False
-
     def save(self, question, user):
         text = self.cleaned_data.get('text')
         answer = Answer.objects.create(text=text, question=question, author=user)
@@ -51,15 +46,15 @@ class AnswerForm(forms.Form):
 class SignupForm(forms.Form):
     username = forms.CharField(max_length=100, required=True, widget=forms.TextInput(attrs={
         'class': 'form-control',
-        'id': 'InputUsername',
+        'id': 'username',
     }))
     password = forms.CharField(required=True, widget=forms.PasswordInput(attrs={
         'class': 'form-control',
-        'id': 'InputPassword'
+        'id': 'password'
     }))
     repeat_password = forms.CharField(required=True, widget=forms.PasswordInput(attrs={
         'class': 'form-control',
-        'id': 'ReInputPassword'
+        'id': 'repeat_password'
     }))
 
     def clean(self):
@@ -76,11 +71,6 @@ class SignupForm(forms.Form):
             self.add_error('password', '')
             self.add_error('repeat_password', 'Пароль должен быть не менее 8 символов')
 
-    def __init__(self, *args, **kwargs):
-        super(SignupForm, self).__init__(*args, **kwargs)
-        self.helper = FormHelper()
-        self.helper.form_show_labels = False
-
     def save(self):
         user = User.objects.create_user(
             username=self.cleaned_data['username'],
@@ -94,17 +84,12 @@ class SignupForm(forms.Form):
 class AuthForm(forms.Form):
     username = forms.CharField(max_length=100, required=True, widget=forms.TextInput(attrs={
         'class': 'form-control',
-        'id': 'InputUsername',
+        'id': 'username',
     }))
     password = forms.CharField(required=True, widget=forms.PasswordInput(attrs={
         'class': 'form-control',
-        'id': 'InputPassword'
+        'id': 'password'
     }))
-
-    def __init__(self, *args, **kwargs):
-        super(AuthForm, self).__init__(*args, **kwargs)
-        self.helper = FormHelper()
-        self.helper.form_show_labels = False
 
     def clean(self):
         super().clean()

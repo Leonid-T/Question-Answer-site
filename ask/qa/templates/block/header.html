@@ -21,14 +21,16 @@
                     <button class="btn btn-outline-success" type="submit">Поиск</button>
                 </form>
                 <div class="d-flex mb-2 mb-lg-0">
-                    <a class="btn btn-outline-success mr-3" href="{% url 'qa:ask' %}">Задать вопрос</a>
+                    <a class="btn btn-outline-success" href="{% url 'qa:ask' %}">Задать вопрос</a>
+                    <div class="mx-3">
                     {% if user.is_authenticated %}
-                    <span class="navbar-text mx-3">{{ user }}</span>
+                    <a class="btn btn-link">{{ user.username }}</a>
                     <a class="btn btn-link" href="{% url 'qa:logout' %}">Выход</a>
                     {% else %}
                     <a class="btn btn-link" href="{% url 'qa:login' %}">Вход</a>
                     <a class="btn btn-link" href="{% url 'qa:signup' %}">Регистрация</a>
                     {% endif %}
+                    </div>
                 </div>
             </div>
         </div>

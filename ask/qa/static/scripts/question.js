@@ -17,10 +17,10 @@ $(document).ready(function() {
             url: location.href,
             success: function (data) {
                 $('#answer_form')[0].reset();
-                let answerHtml = createAnswer(data)
+                let answerHtml = createAnswer(data);
                 $('#answers').prepend(answerHtml);
             },
-            error: function (data) { console.log(data.responseJSON.error) },
+            error: function (data) { console.log(data.responseJSON.error); },
         });
         return false;
     })

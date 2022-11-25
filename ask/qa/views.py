@@ -84,8 +84,8 @@ class SignupView(View):
             user = form.save()
             if user is not None:
                 login(request, user)
-                return HttpResponseRedirect(reverse('qa:index'))
-        return render(request, 'signup.html', {'form': form})
+                return JsonResponse({'url': reverse('qa:index')}, status=200)
+        return JsonResponse({'error': form.errors}, status=400)
 
 
 class LoginView(View):
@@ -99,9 +99,9 @@ class LoginView(View):
             user = authenticate(**form.cleaned_data)
             if user is not None:
                 login(request, user)
-                return HttpResponseRedirect(reverse('qa:index'))
+                return JsonResponse({'url': reverse('qa:index')}, status=200)
         form.add_error('password', 'Неправильное имя пользователя или пароль')
-        return render(request, 'login.html', {'form': form})
+        return JsonResponse({'error': form.errors}, status=400)
 
 
 class SearchView(View):
