@@ -6,8 +6,9 @@ from django.contrib.auth import authenticate, login
 from django.core.paginator import Paginator
 from django.db.models import Q
 
-from .models import Question, Answer
-from .forms import AskForm, AnswerForm, SignupForm, AuthForm, serialize_answers, serialize_questions
+from .models import Question, Answer, LikeDislike
+from .forms import AskForm, AnswerForm, SignupForm, AuthForm
+from .serializer import serialize_answers, serialize_questions
 
 
 class IndexView(View):
@@ -154,4 +155,31 @@ class LoadAnswers(View):
 
 
 class ContactsView(View):
-    pass
+    def get(self, request):
+        return render(request, 'contacts.html')
+
+
+class ProfileView(View):
+    def get(self, request):
+        if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+            pass
+        else:
+            return render(request, 'profile.html')
+
+
+class VoteView(View):
+    model = None
+    vote_type = None
+
+    def post(self, request, pk):
+        user = request.user
+        if user.is_authenticated:
+            obj = get_object_or_404(self.model, pk=pk)
+            result = LikeDislike.objects.get_or_create_or_remove(obj, user, self.vote_type)
+            return JsonResponse({
+                'id': obj.id,
+                'result': result,
+                'rating': obj.votes.rating(),
+            }, status=200)
+        else:
+            return JsonResponse({'error': 'Is not authenticated'}, status=400)

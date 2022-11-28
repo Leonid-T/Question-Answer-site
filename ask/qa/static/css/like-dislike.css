@@ -1,0 +1,37 @@
+.like {
+    background-image: url("../img/thumb-up.svg");
+    background-color: #ffffff;
+    border: 0;
+    border-radius: 30%;
+    width: 25px;
+    height: 25px;
+}
+
+.dislike {
+    background-image: url("../img/thumb-down.svg");
+    background-color: #ffffff;
+    border: 0;
+    border-radius: 30%;
+    width: 25px;
+    height: 25px;
+}
+
+.like.active {
+    background-image: url("../img/thumb-up-active.svg");
+}
+
+.dislike.active {
+    background-image: url("../img/thumb-down-active.svg");
+}
+
+.like:hover, .dislike:hover {
+    background-color: #0074d93d;
+}
+
+.like:hover, .dislike:hover {
+    background-color: #0074d93d;
+}
+
+.like:active, .dislike:active {
+    background-color: #0074d969;
+}

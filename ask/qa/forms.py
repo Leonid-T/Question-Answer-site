@@ -1,12 +1,9 @@
 from django import forms
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate
-from django.urls import reverse
-from django.utils.formats import localize
-from django.utils.timezone import template_localtime
-from django.utils.html import escape
 
-from .models import Question, Answer
+from .models import Answer
+from .serializer import serialize_new_answer
 
 
 class AskForm(forms.Form):
@@ -29,15 +26,7 @@ class AnswerForm(forms.Form):
     def save(self, question, user):
         text = self.cleaned_data.get('text')
         answer = Answer.objects.create(text=text, question=question, author=user)
-        content = {
-            'text': escape(text),
-            'added_at': localize(template_localtime(answer.added_at)),
-            'author': escape(user.username),
-            'answer_id': answer.id,
-            'question_id': answer.question_id,
-            'url_delete': reverse('qa:delete_answer'),
-            'is_user': True,
-        }
+        content = serialize_new_answer(answer, user)
         return content
 
 
@@ -94,49 +83,3 @@ class AuthForm(forms.Form):
         username = self.cleaned_data.get('username')
         if not User.objects.filter(username=username).exists():
             self.add_error('username', 'Пользователя с данным именем не существует')
-
-
-def serialize_answers(page_obj, user):
-    answers = {}
-    number = 0
-    for answer in page_obj:
-        is_user = user.username == answer.author.username
-        answers[number] = {
-            'text': escape(answer.text),
-            'author': escape(answer.author.username),
-            'question_id': answer.question_id,
-            'added_at': localize(template_localtime(answer.added_at)),
-            'answer_id': answer.id,
-        }
-        if is_user:
-            answers[number]['url_delete'] = reverse('qa:delete_answer')
-            answers[number]['is_user'] = is_user
-        number += 1
-    return {'has_page': page_obj.has_next(), 'answers': answers}
-
-
-def serialize_questions(page_obj, user):
-    questions = {}
-    number = 0
-    for question in page_obj:
-        is_user = user.username == question.author.username
-        questions[number] = {
-            'id': question.id,
-            'title': escape(question.title),
-            'text_short': escape(question.text_short),
-            'author': escape(question.author.username),
-            'url_detail': reverse('qa:question', args=[question.id]),
-            'answers_count': question.answers.count(),
-        }
-        if is_user:
-            questions[number]['url_delete'] = reverse('qa:delete_question')
-            questions[number]['is_user'] = is_user
-        number += 1
-    page = {
-        'number': page_obj.number,
-        'num_pages': page_obj.paginator.num_pages,
-        'previous_active': page_obj.has_previous(),
-        'next_active': page_obj.has_next(),
-        'count': page_obj.paginator.count,
-    }
-    return {'page': page, 'questions': questions}

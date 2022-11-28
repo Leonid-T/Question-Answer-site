@@ -1,7 +1,24 @@
 'use strict'
 
+const csrftoken = getCookie('csrftoken');
+
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+
 $(document).ready(function() {
-    loadQuestions(1, 'popular');
+    loadQuestions(1, 'new');
 });
 
 function changeOption(sort_option) {
@@ -37,17 +54,32 @@ function loadQuestions(page, sort_option) {
 
 function createQuestion(data) {
     let delete_button = '';
-    let questionHtml = `<div class="card my-3 flex-row" id="${ data.id }">
+    let questionHtml = `<div class="card my-3" id="${ data.id }">
                             <div class="card-body">
                                 <div class="d-flex justify-content-between">
                                     <a class="text-decoration-none" href="${ data.url_detail }" ><h5 class="card-title d-flex">${ data.title }</h5></a>
                                     ${ delete_button }
                                 </div>
                                 <p class="card-text">${ data.text_short }</p>
+                            </div>
+                            <div class="d-flex justify-content-between px-3">
                                 <p class="card-text">Ответов: ${ data.answers_count }</p>
+                                <div class="d-flex">
+                                    <h5 id="rating_${ data.id }" class="mx-2">${ data.rating }</h5>
+                                    <button id="like_${ data.id }" class="like mx-2 ${is_like(data.is_like_dislike)}" onclick="like('${ data.url_like }')"></button>
+                                    <button id="dislike_${ data.id }" class="dislike ${is_dislike(data.is_like_dislike)}" onclick="dislike('${ data.url_dislike }')"></button>
+                                </div>
                             </div>
                         </div>`;
     return questionHtml;
+}
+
+function is_like(num) {
+    if ( num == 1 ) { return 'active' }
+}
+
+function is_dislike(num) {
+    if ( num == -1 ) { return 'active' }
 }
 
 class Paginator {
@@ -101,4 +133,44 @@ class Paginator {
         else if ( active == 'active' ) { return 'active' }
         else { return ''; }
     }
+}
+
+function like(url) {
+    $.ajax({
+        data: {},
+        type: 'post',
+        url: url,
+        headers: { 'X-CSRFToken': csrftoken },
+        success: function (data) {
+            $(`#rating_${ data.id }`).html(data.rating);
+            let like_button = $(`#like_${ data.id }`);
+            let dislike_button = $(`#dislike_${ data.id }`);
+            like_button.removeClass('active');
+            dislike_button.removeClass('active');
+            if ( data.result ) {
+                $(`#like_${ data.id }`).addClass('active');
+            }
+        },
+        error: function (data) { console.log(data.responseJSON.error); },
+    });
+}
+
+function dislike(url) {
+    $.ajax({
+        data: {},
+        type: 'post',
+        url: url,
+        headers: { 'X-CSRFToken': csrftoken },
+        success: function (data) {
+            $(`#rating_${ data.id }`).html(data.rating);
+            let like_button = $(`#like_${ data.id }`);
+            let dislike_button = $(`#dislike_${ data.id }`);
+            like_button.removeClass('active');
+            dislike_button.removeClass('active');
+            if ( data.result ) {
+                $(`#dislike_${ data.id }`).addClass('active');
+            }
+        },
+        error: function (data) { console.log(data.responseJSON.error); },
+    });
 }
