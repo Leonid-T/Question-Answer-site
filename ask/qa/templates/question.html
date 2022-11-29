@@ -23,11 +23,18 @@
                         </div>
                         <h6 class="card-subtitle mb-2 text-muted">{{ question.author }}</h6>
                         <p class="card-text my-3">{{ question.text }}</p>
+                    </div>
+                    <div class="d-flex justify-content-between px-3">
                         <time class="text-muted"><small>{{ question.added_at }}</small></time>
+                        <div class="d-flex">
+                            <h5 id="rating_{{ question.id }}" class="mx-2">{{ rating }}</h5>
+                                  <button id="like_{{ question.id }}" class="like mx-2 {{ is_like }}" onclick="like('{{ url_like }}')"></button>
+                                  <button id="dislike_{{ question.id }}" class="dislike {{ is_dislike }}" onclick="dislike('{{ url_dislike }}')"></button>
+                        </div>
                     </div>
                 </div>
                 <h4 class="my-3">Ответы</h4>
-                <div class="card">
+                <div class="card my-3">
                     <h5 class="card-header">Оставьте свой ответ</h5>
                     <div class="card-body">
                         {% if user.is_authenticated %}
@@ -44,6 +51,14 @@
                         {% endif %}
                     </div>
                 </div>
+                <ul id="sortOption" class="nav nav-tabs">
+                    <li class="nav-item">
+                        <button id="new" class="nav-link active" onclick="changeOption('new')">Новые</button>
+                    </li>
+                    <li class="nav-item">
+                        <button id="popular" class="nav-link" onclick="changeOption('popular')">Популярные</button>
+                    </li>
+                </ul>
                 <div id="answers"></div>
             </div>
         </div>
@@ -51,5 +66,7 @@
 {% endblock %}
 {% block script %}
 {% load static %}
+<script src="{% static 'scripts/csrftoken.js' %}" defer></script>
 <script src="{% static 'scripts/question.js' %}" defer></script>
+<script src="{% static 'scripts/like_dislike.js' %}" defer></script>
 {% endblock %}

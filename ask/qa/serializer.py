@@ -6,13 +6,17 @@ from django.urls import reverse
 
 def serialize_new_answer(answer, user):
     return {
+        'id': answer.id,
         'text': escape(answer.text),
         'added_at': localize(template_localtime(answer.added_at)),
         'author': escape(user.username),
-        'answer_id': answer.id,
         'question_id': answer.question_id,
         'url_delete': reverse('qa:delete_answer'),
         'is_user': True,
+        'is_like_dislike': 0,
+        'url_like': reverse('qa:like_answer', args=[answer.id]),
+        'url_dislike': reverse('qa:dislike_answer', args=[answer.id]),
+        'rating': 0,
     }
 
 
@@ -22,15 +26,20 @@ def serialize_answers(page_obj, user):
     for answer in page_obj:
         is_user = user.username == answer.author.username
         answers[number] = {
+            'id': answer.id,
             'text': escape(answer.text),
             'author': escape(answer.author.username),
             'question_id': answer.question_id,
             'added_at': localize(template_localtime(answer.added_at)),
-            'answer_id': answer.id,
+            'url_like': reverse('qa:like_answer', args=[answer.id]),
+            'url_dislike': reverse('qa:dislike_answer', args=[answer.id]),
+            'rating': answer.votes.rating(),
         }
-        if is_user:
-            answers[number]['url_delete'] = reverse('qa:delete_answer')
-            answers[number]['is_user'] = is_user
+        if user.is_authenticated:
+            answers[number]['is_like_dislike'] = answer.votes.is_like_dislike(user, answer.id)
+            if is_user:
+                answers[number]['url_delete'] = reverse('qa:delete_answer')
+                answers[number]['is_user'] = is_user
         number += 1
     return {'has_page': page_obj.has_next(), 'answers': answers}
 
@@ -48,7 +57,7 @@ def serialize_questions(page_obj, user):
             'url_detail': reverse('qa:question', args=[question.id]),
             'url_like': reverse('qa:like_question', args=[question.id]),
             'url_dislike': reverse('qa:dislike_question', args=[question.id]),
-            'answers_count': question.answers.count(),
+            'answers_count': question.answer_set.count(),
             'rating': question.votes.rating(),
         }
         if user.is_authenticated:

@@ -1,12 +1,10 @@
 'use strict'
 
-const csrftoken = getCookie('csrftoken');
-
 let hasPage = true;
 let page = 1;
 
 $(document).ready(function() {
-    loadOnScroll();
+    loadOnScroll('new');
 });
 
 $(document).ready(function() {
@@ -25,21 +23,6 @@ $(document).ready(function() {
         return false;
     })
 });
-
-function getCookie(name) {
-    let cookieValue = null;
-    if (document.cookie && document.cookie !== '') {
-        const cookies = document.cookie.split(';');
-        for (let i = 0; i < cookies.length; i++) {
-            const cookie = cookies[i].trim();
-            if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                break;
-            }
-        }
-    }
-    return cookieValue;
-}
 
 function AjaxRemoveAnswer(url, QuestionRemoveId, AnswerRemoveId) {
     $.ajax({
@@ -68,16 +51,19 @@ function AjaxRemoveQuestion(url, removeId, urlRedirect) {
     })
 }
 
-function loadOnScroll() {
+function loadOnScroll(sort_option) {
     if ($(window).scrollTop() > $(document).height() - $(window).height() * 2) {
         $(window).unbind();
-        loadItems();
+        loadItems(sort_option);
     }
 }
 
-function loadItems() {
+function loadItems(sort_option) {
     $.ajax({
-        data: {'page': page },
+        data: {
+            'sort_option': sort_option,
+            'page': page,
+        },
         type: 'get',
         url: location.href + '/load_answers',
         success: function(data) {
@@ -89,7 +75,7 @@ function loadItems() {
             }
             if (hasPage) {
                 page++;
-                $(window).bind('scroll', loadOnScroll);
+                $(window).bind('scroll', function () { loadOnScroll(sort_option) });
             }
         },
         error: function() { console.log(data.responseJSON.error); },
@@ -98,14 +84,21 @@ function loadItems() {
 
 function createAnswer(data) {
     let delete_button = CreateDeleteButton(data);
-    let answerHtml = `<div class="card my-3" id="${ data.answer_id }">
+    let answerHtml = `<div class="card my-3" id="${ data.id }">
                           <div class="card-body">
                               <div class="d-flex justify-content-between">
                                   <h5 class="card-title">${ data.author }</h5>
                                   ${ delete_button }
                               </div>
                               <p class="card-text">${ data.text }</p>
+                          </div>
+                          <div class="d-flex justify-content-between px-3">
                               <time class="text-muted"><small>${ data.added_at }</small></time>
+                              <div class="d-flex">
+                                  <h5 id="rating_${ data.id }" class="mx-2">${ data.rating }</h5>
+                                  <button id="like_${ data.id }" class="like mx-2 ${is_like(data.is_like_dislike)}" onclick="like('${ data.url_like }')"></button>
+                                  <button id="dislike_${ data.id }" class="dislike ${is_dislike(data.is_like_dislike)}" onclick="dislike('${ data.url_dislike }')"></button>
+                              </div>
                           </div>
                       </div>`;
     return answerHtml;
@@ -114,7 +107,15 @@ function createAnswer(data) {
 function CreateDeleteButton(data) {
     if (data.is_user) {
         return `<form method="post">
-                    <button type="button" class="btn-close d-flex" onclick="AjaxRemoveAnswer('${ data.url_delete }',${ data.question_id }, ${ data.answer_id })" aria-label="Delete"></button>
+                    <button type="button" class="btn-close d-flex" onclick="AjaxRemoveAnswer('${ data.url_delete }',${ data.question_id }, ${ data.id })" aria-label="Delete"></button>
                 </form>`
     } else { return '' }
+}
+
+function changeOption(sort_option) {
+    $('#sortOption button').removeClass('active');
+    $(`#${sort_option}`).addClass('active');
+    $('#answers').html('');
+    page = 1;
+    loadOnScroll(sort_option);
 }

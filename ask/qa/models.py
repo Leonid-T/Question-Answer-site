@@ -10,7 +10,7 @@ class LikeDislikeManager(models.Manager):
     def is_like_dislike(self, user, obj_id):
         try:
             return self.get(user=user, object_id=obj_id).vote
-        except (KeyError, LikeDislike.DoesNotExist):
+        except (TypeError, KeyError, LikeDislike.DoesNotExist):
             return 0
 
     def rating(self):
@@ -59,7 +59,10 @@ class QuestionManager(models.Manager):
         return self.order_by('-added_at')
 
     def popular(self):
-        return self.all()
+        return self.order_by('-rating', '-added_at')
+
+    def search(self, query_search):
+        return self.filter(models.Q(title__icontains=query_search) | models.Q(text__icontains=query_search))
 
 
 class Question(models.Model):
@@ -75,9 +78,11 @@ class Question(models.Model):
     def __str__(self):
         return self.title
 
-    @property
-    def answers(self):
+    def answers_new(self):
         return self.answer_set.order_by('-added_at')
+
+    def answers_popular(self):
+        return self.answer_set.order_by('-rating', '-added_at')
 
     @property
     def text_short(self):
@@ -87,13 +92,26 @@ class Question(models.Model):
         else:
             return self.text
 
+    def update_rating(self):
+        rating = self.votes.rating()
+        self.rating = rating
+        self.save(update_fields=['rating'])
+        return rating
+
 
 class Answer(models.Model):
     text = models.TextField()
     added_at = models.DateTimeField(blank=True, auto_now_add=True)
     question = models.ForeignKey(Question, on_delete=models.CASCADE)
     author = models.ForeignKey(User, on_delete=models.CASCADE)
+    rating = models.IntegerField(default=0)
     votes = GenericRelation(LikeDislike, related_query_name='answers')
 
     def __str__(self):
         return self.text
+
+    def update_rating(self):
+        rating = self.votes.rating()
+        self.rating = rating
+        self.save(update_fields=['rating'])
+        return rating
