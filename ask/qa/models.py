@@ -61,6 +61,9 @@ class QuestionManager(models.Manager):
     def popular(self):
         return self.order_by('-rating', '-added_at')
 
+    def my_questions(self, user):
+        return self.filter(author=user).order_by('-added_at')
+
     def search(self, query_search):
         return self.filter(models.Q(title__icontains=query_search) | models.Q(text__icontains=query_search))
 

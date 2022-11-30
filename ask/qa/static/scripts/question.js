@@ -4,10 +4,6 @@ let hasPage = true;
 let page = 1;
 
 $(document).ready(function() {
-    loadOnScroll('new');
-});
-
-$(document).ready(function() {
     $('#answer_form').submit(function () {
         $.ajax({
             data: $(this).serialize(),
@@ -24,31 +20,16 @@ $(document).ready(function() {
     })
 });
 
-function AjaxRemoveAnswer(url, QuestionRemoveId, AnswerRemoveId) {
-    $.ajax({
-        data: {
-            question_id: QuestionRemoveId,
-            answer_id: AnswerRemoveId,
-        },
-        type: 'post',
-        url: url,
-        headers: { 'X-CSRFToken': csrftoken },
-        success: function (data) { document.getElementById(AnswerRemoveId).remove(); },
-        error: function() { console.log(data.responseJSON.error); },
-    })
-}
+$(document).ready(function() {
+    loadOnScroll('new');
+});
 
-function AjaxRemoveQuestion(url, removeId, urlRedirect) {
-    $.ajax({
-        data: {
-            id: removeId,
-        },
-        type: 'post',
-        url: url,
-        headers: { 'X-CSRFToken': csrftoken },
-        success: function (data) { window.location = urlRedirect; },
-        error: function() { console.log(data.responseJSON.error); },
-    })
+function changeOption(sort_option) {
+    $('#sortOption button').removeClass('active');
+    $(`#${sort_option}`).addClass('active');
+    $('#answers').html('');
+    page = 1;
+    loadOnScroll(sort_option);
 }
 
 function loadOnScroll(sort_option) {
@@ -112,10 +93,29 @@ function CreateDeleteButton(data) {
     } else { return '' }
 }
 
-function changeOption(sort_option) {
-    $('#sortOption button').removeClass('active');
-    $(`#${sort_option}`).addClass('active');
-    $('#answers').html('');
-    page = 1;
-    loadOnScroll(sort_option);
+function AjaxRemoveAnswer(url, QuestionRemoveId, AnswerRemoveId) {
+    $.ajax({
+        data: {
+            question_id: QuestionRemoveId,
+            answer_id: AnswerRemoveId,
+        },
+        type: 'post',
+        url: url,
+        headers: { 'X-CSRFToken': csrftoken },
+        success: function (data) { document.getElementById(AnswerRemoveId).remove(); },
+        error: function() { console.log(data.responseJSON.error); },
+    })
+}
+
+function AjaxRemoveQuestion(url, removeId, urlRedirect) {
+    $.ajax({
+        data: {
+            id: removeId,
+        },
+        type: 'post',
+        url: url,
+        headers: { 'X-CSRFToken': csrftoken },
+        success: function (data) { window.location = urlRedirect; },
+        error: function() { console.log(data.responseJSON.error); },
+    })
 }

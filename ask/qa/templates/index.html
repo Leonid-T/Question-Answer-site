@@ -11,6 +11,11 @@
                 <li class="nav-item">
                     <button id="popular" class="nav-link" onclick="changeOption('popular')">Популярные</button>
                 </li>
+                {% if user.is_authenticated %}
+                <li class="nav-item">
+                    <button id="my_questions" class="nav-link" onclick="changeOption('my_questions')">Мои вопросы</button>
+                </li>
+                {% endif %}
             </ul>
             <div id="questions"></div>
             <nav class="d-flex justify-content-center mt-3 mb-1">

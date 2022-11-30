@@ -12,15 +12,16 @@ from .serializer import serialize_answers, serialize_questions
 
 class IndexView(View):
     sort_method = {
-        'popular': Question.objects.popular,
-        'new': Question.objects.new,
+        'popular': lambda user: Question.objects.popular(),
+        'new': lambda user: Question.objects.new(),
+        'my_questions': lambda user: Question.objects.my_questions(user),
     }
 
     def get(self, request):
         if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
             page = request.GET.get('page')
             sort_option = request.GET.get('sort_option')
-            questions = self.sort_method[sort_option]()
+            questions = self.sort_method[sort_option](request.user)
             paginate_by = 10
             paginator = Paginator(questions, paginate_by)
             page_obj = paginator.get_page(page)
@@ -170,14 +171,6 @@ class LoadAnswers(View):
 class ContactsView(View):
     def get(self, request):
         return render(request, 'contacts.html')
-
-
-class ProfileView(View):
-    def get(self, request):
-        if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
-            pass
-        else:
-            return render(request, 'profile.html')
 
 
 class VoteView(View):

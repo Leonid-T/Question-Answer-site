@@ -4,7 +4,24 @@
 <div class="container">
     <div class="row justify-content-center">
         <div class="col-lg-9">
-
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{% url 'qa:index' %}">Список вопросов</a></li>
+                    <li class="breadcrumb-item active">Контакты</li>
+                </ol>
+            </nav>
+            <div class="card my-3">
+                <div class="card-body d-flex">
+                    <p class="card-title lead w-25">Email:</p>
+                    <p class="card-title lead">titov281@yandex.ru</p>
+                </div>
+            </div>
+            <div class="card my-3">
+                <div class="card-body d-flex">
+                    <p class="card-title lead w-25">Github:</p>
+                    <a class="card-title lead text-decoration-none" href="https://github.com/Leonid-T">github.com/Leonid-T</a>
+                </div>
+            </div>
         </div>
     </div>
 </div>

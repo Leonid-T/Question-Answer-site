@@ -40,7 +40,10 @@ function createQuestion(data) {
     let questionHtml = `<div class="card my-3" id="${ data.id }">
                             <div class="card-body">
                                 <div class="d-flex justify-content-between">
+                                    <div class="d-flex">
                                     <a class="text-decoration-none" href="${ data.url_detail }" ><h5 class="card-title d-flex">${ data.title }</h5></a>
+                                    <h6 class="card-subtitle mt-1 mx-3 text-muted">${ data.author }</h6>
+                                    </div>
                                     ${ delete_button }
                                 </div>
                                 <p class="card-text">${ data.text_short }</p>

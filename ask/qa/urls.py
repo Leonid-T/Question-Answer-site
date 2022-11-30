@@ -17,7 +17,6 @@ urlpatterns = [
     path('delete_question', views.QuestionDelete.as_view(), name='delete_question'),
     path('question/<int:pk>/load_answers', views.LoadAnswers.as_view(), name='load_answers'),
     path('contacts', views.ContactsView.as_view(), name='contacts'),
-    path('profile', views.ProfileView.as_view(), name='profile'),
     path('question/<int:pk>/like', views.VoteView.as_view(model=Question, vote_type=LikeDislike.LIKE),
          name='like_question'),
     path('question/<int:pk>/dislike', views.VoteView.as_view(model=Question, vote_type=LikeDislike.DISLIKE),
