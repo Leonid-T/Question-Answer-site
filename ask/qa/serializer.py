@@ -36,7 +36,7 @@ def serialize_answers(page_obj, user):
             'rating': answer.votes.rating(),
         }
         if user.is_authenticated:
-            answers[number]['is_like_dislike'] = answer.votes.is_like_dislike(user, answer.id)
+            answers[number]['is_like_dislike'] = answer.votes.is_like_dislike(user, answer)
             if is_user:
                 answers[number]['url_delete'] = reverse('qa:delete_answer')
                 answers[number]['is_user'] = is_user
@@ -61,7 +61,7 @@ def serialize_questions(page_obj, user):
             'rating': question.votes.rating(),
         }
         if user.is_authenticated:
-            questions[number]['is_like_dislike'] = question.votes.is_like_dislike(user, question.id)
+            questions[number]['is_like_dislike'] = question.votes.is_like_dislike(user, question)
             if is_user:
                 questions[number]['url_delete'] = reverse('qa:delete_question')
                 questions[number]['is_user'] = is_user

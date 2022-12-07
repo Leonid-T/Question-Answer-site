@@ -31,11 +31,11 @@ class IndexView(View):
             return render(request, 'index.html')
 
 
-class QuestionView(View):
+class QuestionDetailView(View):
     def get(self, request, pk):
         question = get_object_or_404(Question, pk=pk)
         form = AnswerForm()
-        is_like_dislike = question.votes.is_like_dislike(request.user, question.id)
+        is_like_dislike = question.votes.is_like_dislike(request.user, question)
         is_like = 'active' if is_like_dislike == 1 else ''
         is_dislike = 'active' if is_like_dislike == -1 else ''
         return render(request, 'question.html', {
@@ -181,7 +181,7 @@ class VoteView(View):
         user = request.user
         if user.is_authenticated:
             obj = get_object_or_404(self.model, pk=pk)
-            result = LikeDislike.objects.get_or_create_or_remove(obj, user, self.vote_type)
+            result = LikeDislike.objects.set_like_or_dislike_or_remove(obj, user, self.vote_type)
             rating = obj.update_rating()
             return JsonResponse({
                 'id': obj.id,

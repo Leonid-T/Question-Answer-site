@@ -7,18 +7,22 @@ from django.contrib.contenttypes.fields import GenericForeignKey, GenericRelatio
 class LikeDislikeManager(models.Manager):
     use_for_related_fields = True
 
-    def is_like_dislike(self, user, obj_id):
+    def is_like_dislike(self, user, obj):
         try:
-            return self.get(user=user, object_id=obj_id).vote
+            return self.get(
+                content_type=ContentType.objects.get_for_model(obj),
+                object_id=obj.id,
+                user=user
+            ).vote
         except (TypeError, KeyError, LikeDislike.DoesNotExist):
             return 0
 
     def rating(self):
         return self.aggregate(models.Sum('vote')).get('vote__sum') or 0
 
-    def get_or_create_or_remove(self, obj, user, vote_type):
+    def set_like_or_dislike_or_remove(self, obj, user, vote_type):
         try:
-            like_dislike = LikeDislike.objects.get(
+            like_dislike = self.get(
                 content_type=ContentType.objects.get_for_model(obj),
                 object_id=obj.id,
                 user=user
