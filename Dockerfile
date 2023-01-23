@@ -4,3 +4,5 @@ COPY requirements.txt ./
 RUN pip install -r requirements.txt
 COPY ./ask ./ask
 WORKDIR ./ask
+RUN chmod +x entrypoint.sh
+ENTRYPOINT ["./entrypoint.sh"]
