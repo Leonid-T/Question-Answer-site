@@ -1,2 +1,5 @@
+.idea/
 env/
-*run_server.bat
+**run_server.bat
+**db.sqlite3
+**/__pycache__/**
